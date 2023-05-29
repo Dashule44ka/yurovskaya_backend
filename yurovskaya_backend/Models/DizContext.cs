@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore; //
+using NuGet.LibraryModel;
+using yurovskaya_backend.Models;
 
 namespace yurovskaya_backend.Models
 {
@@ -7,19 +9,19 @@ namespace yurovskaya_backend.Models
         public DizContext(DbContextOptions<DizContext> options)
             : base(options)
         {
-            Database.EnsureCreated();
+            
         }
 
-        /*
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Diz>().HasMany(lib => lib.order).WithMany();
         }
-        */
 
-        public DbSet<order> Orders { get; set; } // здесь вместо book название своего класса
-
-        public DbSet<client> Clients { get; set; } //
+        public DbSet<yurovskaya_backend.Models.client> client { get; set; }
+        public DbSet<yurovskaya_backend.Models.order> order { get; set; }
+        public DbSet<yurovskaya_backend.Models.Diz> Diz { get; set; } = default!;
+        public DbSet<yurovskaya_backend.Models.user> user { get; set; } = default!;
+        
     }
 }

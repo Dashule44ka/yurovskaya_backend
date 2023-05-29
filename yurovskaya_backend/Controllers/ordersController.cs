@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,22 +25,23 @@ namespace yurovskaya_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<order>>> GetOrders()
         {
-          if (_context.Orders == null)
+          if (_context.order == null)
           {
               return NotFound();
           }
-            return await _context.Orders.ToListAsync();
+            return await _context.order.ToListAsync();
         }
 
         // GET: api/orders/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")] // везде добавит??? где нужно
         public async Task<ActionResult<order>> Getorder(int id)
         {
-          if (_context.Orders == null)
+          if (_context.order == null)
           {
               return NotFound();
           }
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.order.FindAsync(id);
 
             if (order == null)
             {
@@ -85,11 +87,12 @@ namespace yurovskaya_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<order>> Postorder(order order)
         {
-          if (_context.Orders == null)
+          if (_context.order == null)
           {
               return Problem("Entity set 'DizContext.Orders'  is null.");
           }
-            _context.Orders.Add(order);
+            var orderr = new order(order.Id, order.description, order.title, order.title, order.version);
+            _context.order.Add(order);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("Getorder", new { id = order.Id }, order);
@@ -99,17 +102,17 @@ namespace yurovskaya_backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deleteorder(int id)
         {
-            if (_context.Orders == null)
+            if (_context.order == null)
             {
                 return NotFound();
             }
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.order.FindAsync(id);
             if (order == null)
             {
                 return NotFound();
             }
 
-            _context.Orders.Remove(order);
+            _context.order.Remove(order);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,7 +120,28 @@ namespace yurovskaya_backend.Controllers
 
         private bool orderExists(int id)
         {
-            return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.order?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        // GET: api/order/version
+        [HttpGet("search/")]
+        public async Task<ActionResult<IEnumerable<order>>> GetorderByclient(int version)
+        {
+            if (_context.order == null)
+            {
+                return NotFound();
+            }
+            var orderr = await _context.order
+                .Where(a => a.version == version)
+                .ToListAsync();
+
+            if (orderr == null)
+            {
+                return NotFound();
+            }
+
+            return orderr;
+        }
+
     }
 }
