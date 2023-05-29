@@ -15,9 +15,9 @@ namespace yurovskaya_backend.Controllers
     [ApiController]
     public class usersController : ControllerBase
     {
-        private readonly DizContext _context;
+        private readonly OrderContext _context;
 
-        public usersController(DizContext context)
+        public usersController(OrderContext context)
         {
             _context = context;
         }
@@ -26,22 +26,22 @@ namespace yurovskaya_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<user>>> Getuser()
         {
-          if (_context.user == null)
+          if (_context.users == null)
           {
               return NotFound();
           }
-            return await _context.user.ToListAsync();
+            return await _context.users.ToListAsync();
         }
 
         // GET: api/users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<user>> Getuser(int id)
         {
-          if (_context.user == null)
+          if (_context.users == null)
           {
               return NotFound();
           }
-            var user = await _context.user.FindAsync(id);
+            var user = await _context.users.FindAsync(id);
 
             if (user == null)
             {
@@ -87,11 +87,11 @@ namespace yurovskaya_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<user>> Postuser(user user)
         {
-          if (_context.user == null)
+          if (_context.users == null)
           {
               return Problem("Entity set 'DizContext.user'  is null.");
           }
-            _context.user.Add(user);
+            _context.users.Add(user);
             await _context.SaveChangesAsync();
 
             return StatusCode(201);
@@ -101,17 +101,17 @@ namespace yurovskaya_backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deleteuser(int id)
         {
-            if (_context.user == null)
+            if (_context.users == null)
             {
                 return NotFound();
             }
-            var user = await _context.user.FindAsync(id);
+            var user = await _context.users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.user.Remove(user);
+            _context.users.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -119,7 +119,7 @@ namespace yurovskaya_backend.Controllers
 
         private bool userExists(int id)
         {
-            return (_context.user?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         //////////////////////
@@ -143,7 +143,7 @@ namespace yurovskaya_backend.Controllers
         public object GetToken([FromBody] LoginData ld)
         {
             ld.password = HashStr(ld.password);
-            var user = _context.user.FirstOrDefault(u => u.Login == ld.login && u.PasswordHash == ld.password);
+            var user = _context.users.FirstOrDefault(u => u.Login == ld.login && u.PasswordHash == ld.password);
             if (user == null)
             {
                 Response.StatusCode = 401;

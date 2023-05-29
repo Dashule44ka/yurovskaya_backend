@@ -1,26 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using yurovskaya_backend.Controllers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using System.Text.Json;
 
 namespace yurovskaya_backend.Models
 {
-    public class order
+    public class Order
     {
-        public int Id { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public int version { get; set; }
-        public string client { get; set; }
+        public int id { get; set; }
+        public int clientid { get; set; }
+        public int designid { get; set; }
+        public client? client { get; set; }
+        public Design? design { get; set; }
 
-        public order(int Id, string title, string client, string description, int version)
+        public Order() { }
+        public Order(OrderDTO dto)
         {
-            this.Id = Id;
-            this.title = title;
-            this.client = client;
-            this.description = description;
-            this.version = version;
+            clientid = dto.clientid;
+            designid = dto.designid;
         }
+
+        //public Diz(int id, IList<client>? client, IList<order>? order)
+        //{
+        //    this.id = id;
+        //    client = client;
+        //    order = order;
+        //}
+
+
+        //public void Addclient(client client)
+        //{
+        //    client.Add(client);
+        //}
+
+        //public void Deleteclient(client client)
+        //{
+        //    client.Remove(client);client
+        //}
     }
 }

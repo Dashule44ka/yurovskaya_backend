@@ -15,9 +15,9 @@ namespace yurovskaya_backend.Controllers
     [ApiController]
     public class clientsController : ControllerBase
     {
-        private readonly DizContext _context;
+        private readonly OrderContext _context;
 
-        public clientsController(DizContext context)
+        public clientsController(OrderContext context)
         {
             _context = context;
         }
@@ -26,11 +26,11 @@ namespace yurovskaya_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<client>>> GetClients()
         {
-          if (_context.client == null)
+          if (_context.clients == null)
           {
               return NotFound();
           }
-            return await _context.client.ToListAsync();
+            return await _context.clients.ToListAsync();
         }
 
         //// GET: api/clients/5
@@ -87,34 +87,34 @@ namespace yurovskaya_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<client>> Postclient(client client)
         {
-          if (_context.client == null)
+          if (_context.clients == null)
           {
               return Problem("Entity set 'DizContext.Clients'  is null.");
           }
             //var clienttt = new client(client.Id, client.surname, client.name, client.email);
             //_context.client.Add(clienttt);
-            var clientt = new client(client.Id, client.surname, client.name, client.email);
-            _context.client.Add(clientt);
+            //var clientt = new client(client.Id, client.surname, client.name, client.email);
+            _context.clients.Add(client);
             await _context.SaveChangesAsync();
 
-            return clientt;// вернуть 201 код
+            return client;// вернуть 201 код
         }
 
         // DELETE: api/clients/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deleteclient(int id)
         {
-            if (_context.client == null)
+            if (_context.clients == null)
             {
                 return NotFound();
             }
-            var clientt = await _context.client.FindAsync(id);
+            var clientt = await _context.clients.FindAsync(id);
             if (clientt == null)
             {
                 return NotFound();
             }
 
-            _context.client.Remove(clientt);
+            _context.clients.Remove(clientt);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -122,18 +122,18 @@ namespace yurovskaya_backend.Controllers
 
         private bool clientExists(int id)
         {
-            return (_context.client?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.clients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         // GET: api/order/name
         [HttpGet("{name}")]
         public async Task<ActionResult<IEnumerable<client>>> GetorderByclient(string name)
         {
-            if (_context.client == null)
+            if (_context.clients == null)
             {
                 return NotFound();
             }
-            var clienttt = await _context.client
+            var clienttt = await _context.clients
                 .Where(a => a.name == name)
                 .ToListAsync();
 

@@ -22,7 +22,7 @@ namespace yurovskaya_backend
             // Add services to the container.
             //builder.Services.AddDbContext<DizContext>(options =>
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DizContext")));
-            builder.Services.AddDbContext<DizContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DizContext")));
+            builder.Services.AddDbContext<OrderContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DizContext")));
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

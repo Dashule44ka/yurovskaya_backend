@@ -10,7 +10,7 @@ using yurovskaya_backend.Models;
 
 namespace yurovskaya_backend.Migrations
 {
-    [DbContext(typeof(DizContext))]
+    [DbContext(typeof(OrderContext))]
     [Migration("20230528182405_InitialCreate")]
     partial class InitialCreate
     {

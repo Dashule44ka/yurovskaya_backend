@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using yurovskaya_backend.Models;
@@ -12,56 +12,55 @@ namespace yurovskaya_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ordersController : ControllerBase
+    public class OrdersController : ControllerBase
     {
-        private readonly DizContext _context;
+        private readonly OrderContext _context;
 
-        public ordersController(DizContext context)
+        public OrdersController(OrderContext context)
         {
             _context = context;
         }
 
-        // GET: api/orders
+        // GET: api/Dizs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetDiz()
         {
-          if (_context.order == null)
+          if (_context.orders == null)
           {
               return NotFound();
           }
-            return await _context.order.ToListAsync();
+            return await _context.orders.ToListAsync();
         }
 
-        // GET: api/orders/5
+        // GET: api/Dizs/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "admin")] // везде добавит??? где нужно
-        public async Task<ActionResult<order>> Getorder(int id)
+        public async Task<ActionResult<Order>> GetDiz(int id)
         {
-          if (_context.order == null)
+          if (_context.orders == null)
           {
               return NotFound();
           }
-            var order = await _context.order.FindAsync(id);
+            var diz = await _context.orders.FindAsync(id);
 
-            if (order == null)
+            if (diz == null)
             {
                 return NotFound();
             }
 
-            return order;
+            return diz;
         }
 
-        // PUT: api/orders/5
+        // PUT: api/Dizs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Putorder(int id, order order)
+        public async Task<IActionResult> PutDiz(int id, Order diz)
         {
-            if (id != order.Id)
+            if (id != diz.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(order).State = EntityState.Modified;
+            _context.Entry(diz).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +68,7 @@ namespace yurovskaya_backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!orderExists(id))
+                if (!DizExists(id))
                 {
                     return NotFound();
                 }
@@ -82,65 +81,67 @@ namespace yurovskaya_backend.Controllers
             return NoContent();
         }
 
-        // POST: api/orders
+        // POST: api/Dizs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<order>> Postorder(order order)
+        public async Task<ActionResult<Order>> PostDiz(OrderDTO dto)
         {
-          if (_context.order == null)
+          if (_context.orders == null)
           {
-              return Problem("Entity set 'DizContext.Orders'  is null.");
+              return Problem("Entity set 'DizContext.Diz'  is null.");
           }
-            var orderr = new order(order.Id, order.description, order.title, order.title, order.version);
-            _context.order.Add(order);
+            
+            var user = await _context.clients.FindAsync(dto.clientid);
+            var tp = await _context.designs.FindAsync(dto.designid);
+            if (tp == null || user == null) { return NotFound(); }
+            var ord = new Order(dto);
+            _context.orders.Add(ord);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getorder", new { id = order.Id }, order);
+            return StatusCode(201);
         }
 
-        // DELETE: api/orders/5
+        // DELETE: api/Dizs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Deleteorder(int id)
+        public async Task<IActionResult> DeleteDiz(int id)
         {
-            if (_context.order == null)
+            if (_context.orders == null)
             {
                 return NotFound();
             }
-            var order = await _context.order.FindAsync(id);
-            if (order == null)
+            var diz = await _context.orders.FindAsync(id);
+            if (diz == null)
             {
                 return NotFound();
             }
 
-            _context.order.Remove(order);
+            _context.orders.Remove(diz);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool orderExists(int id)
+        //[HttpGet("OrdersByClient/")]
+        //public async Task<ActionResult<List<order>>> GetOrdersByClientId(int id)
+        //{
+        //    if (_context.order == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    List<order> result = new List<order>();
+        //    if (User.FindFirst("id")?.Value == id.ToString())
+        //    {
+        //        result = _context.Diz.Include(o => o.client).Where(o => o.client == id).ToList();
+        //    }
+
+
+        //    return result;
+        //}
+
+        private bool DizExists(int id)
         {
-            return (_context.order?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        // GET: api/order/version
-        [HttpGet("search/")]
-        public async Task<ActionResult<IEnumerable<order>>> GetorderByclient(int version)
-        {
-            if (_context.order == null)
-            {
-                return NotFound();
-            }
-            var orderr = await _context.order
-                .Where(a => a.version == version)
-                .ToListAsync();
-
-            if (orderr == null)
-            {
-                return NotFound();
-            }
-
-            return orderr;
+            return (_context.orders?.Any(e => e.id == id)).GetValueOrDefault();
         }
 
     }

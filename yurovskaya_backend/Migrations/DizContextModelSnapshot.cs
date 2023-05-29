@@ -9,7 +9,7 @@ using yurovskaya_backend.Models;
 
 namespace yurovskaya_backend.Migrations
 {
-    [DbContext(typeof(DizContext))]
+    [DbContext(typeof(OrderContext))]
     partial class DizContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

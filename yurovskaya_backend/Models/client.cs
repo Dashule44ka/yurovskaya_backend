@@ -21,13 +21,13 @@ namespace yurovskaya_backend.Models
             throw new NotImplementedException();
         }
 
+        List<Order>? orders;
+        
 
-        public client(int Id, string surname, string name, string email)
+
+        public client()
         {
-            this.Id = Id;
-            this.surname = surname;
-            this.name = name;
-            this.email = email;
+            this.orders = new List<Order>();
         }
 
     }
