@@ -122,22 +122,19 @@ namespace yurovskaya_backend.Controllers
             return NoContent();
         }
 
-        //[HttpGet("OrdersByClient/")]
-        //public async Task<ActionResult<List<order>>> GetOrdersByClientId(int id)
-        //{
-        //    if (_context.order == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    List<order> result = new List<order>();
-        //    if (User.FindFirst("id")?.Value == id.ToString())
-        //    {
-        //        result = _context.Diz.Include(o => o.client).Where(o => o.client == id).ToList();
-        //    }
+        [HttpGet("OrdersByClient/")]
+        public async Task<ActionResult<List<Order>>> GetOrdersByClientId(int id)
+        {
+            if (_context.orders == null)
+            {
+                return NotFound();
+            }
+            List<Order> result = new List<Order>();
+                result = _context.orders.Include(o => o.client).Where(o => o.client.Id == id).ToList();
 
 
-        //    return result;
-        //}
+            return result;
+        }
 
         private bool DizExists(int id)
         {
